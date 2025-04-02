@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: main-app-ingress
+  annotations:
+    cert-manager.io/issuer: "letsencrypt-production"
+    #nginx.ingress.kubernetes.io/rewrite-target: "/" 
+    nginx.ingress.kubernetes.io/use-regex: "true"  
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: "nginx"
+  tls:
+  - secretName: mainapp
+    hosts:
+    - cockpitbackend.devopsfaculty.com 
+  rules:
+    - host: cockpitbackend.devopsfaculty.com 
+      http:
+        paths:
+          - path: /api(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: main-app-service
+                port:
+                  number: 80
